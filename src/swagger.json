@@ -1,0 +1,46 @@
+{
+  "openapi": "3.2.0",
+  "info": {
+    "title": "API de Pedidos",
+    "version": "1.0.0",
+    "description": "Documentación interactiva de la API utilizando Prisma ORM"
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api" }
+  ],
+  "paths": {
+    "/pedidos": {
+      "post": {
+        "summary": "Procesar un checkout de compras",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["usuarioId", "productosComprados"],
+                "properties": {
+                  "usuarioId": { "type": "integer", "example": 1 },
+                  "productosComprados": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "productoId": { "type": "integer", "example": 1 },
+                        "cantidad": { "type": "integer", "example": 2 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Pedido creado exitosamente" },
+          "400": { "description": "Datos de entrada incompletos o stock insuficiente" }
+        }
+      }
+    }
+  }
+}

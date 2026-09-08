@@ -1,18 +1,23 @@
 import express from 'express';
-import { TareasRepository } from './tareas/tareas.repository';
-import { TareasService } from './tareas/tareas.service';
-import { crearTareasRouter } from './tareas/tareas.routes';
+import { PrismaClient } from '@prisma/client';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json';
+import { PedidosService } from './pedidos/pedidos.service';
+import { crearPedidosRouter } from './pedidos/pedidos.routes';
 import { errorHandler } from './middlewares/error-handler';
 
 export const app = express();
+app.use(express.json()); // 1. Middleware para JSON
 
-// La inyección de dependencias proporciona a una clase los objetos que necesita
-const repository = new TareasRepository();  
-const service = new TareasService(repository);  
+// 2. Integrar Swagger UI
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Configuración de middlewares y cuerpo de la petición
-app.use(express.json());  
-app.use("/api/v1/tareas", crearTareasRouter(service));
+// 3. Inyección de dependencias con Prisma
+const prisma = new PrismaClient();
+const pedidosService = new PedidosService(prisma);
 
-// El middleware de errores se registra después de las rutas
+// 4. Registrar Rutas
+app.use('/api/pedidos', crearPedidosRouter(pedidosService));
+
+// 5. Manejo centralizado de errores
 app.use(errorHandler);
